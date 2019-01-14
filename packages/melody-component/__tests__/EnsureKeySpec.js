@@ -73,7 +73,7 @@ beforeEach(() => {
                 return { ...state, ...payload };
             }
             return state;
-        },
+        }
     );
     Parent = createComponent(parentTemplate, (count = 0, { type }) => {
         if (type === 'INC') {
@@ -93,12 +93,7 @@ test('should mount on top of existing keyed components', () => {
 
 test('parent should rerender', done => {
     parent.__incrementalDOMData.componentInstance.dispatch({ type: 'INC' });
-    flush({
-        didTimeout: false,
-        timeRemaining() {
-            return 10;
-        },
-    });
+    flush();
     expect(root.innerHTML).toMatchSnapshot();
     done();
 });
@@ -109,12 +104,7 @@ test('children should rerender', done => {
             type: 'INC',
         });
     }
-    flush({
-        didTimeout: false,
-        timeRemaining() {
-            return 10;
-        },
-    });
+    flush();
     expect(root.innerHTML).toMatchSnapshot();
     done();
 });
@@ -125,42 +115,22 @@ test('parent should rerender after children rerender', done => {
             type: 'INC',
         });
     }
-    flush({
-        didTimeout: false,
-        timeRemaining() {
-            return 10;
-        },
-    });
+    flush();
     parent.__incrementalDOMData.componentInstance.dispatch({ type: 'INC' });
-    flush({
-        didTimeout: false,
-        timeRemaining() {
-            return 10;
-        },
-    });
+    flush();
     expect(root.innerHTML).toMatchSnapshot();
     done();
 });
 
 test('children should rerender after parent rerender', done => {
     parent.__incrementalDOMData.componentInstance.dispatch({ type: 'INC' });
-    flush({
-        didTimeout: false,
-        timeRemaining() {
-            return 10;
-        },
-    });
+    flush();
     for (let i = 0; i < 5; i++) {
         children[i].__incrementalDOMData.componentInstance.dispatch({
             type: 'INC',
         });
     }
-    flush({
-        didTimeout: false,
-        timeRemaining() {
-            return 10;
-        },
-    });
+    flush();
     expect(root.innerHTML).toMatchSnapshot();
     done();
 });

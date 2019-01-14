@@ -16,9 +16,8 @@
 import { assert } from 'chai';
 
 import { render, unmountComponentAtNode } from 'melody-component';
-import { elementOpen, elementClose, text } from 'melody-idom';
+import { elementOpen, elementClose, text, flush } from 'melody-idom';
 import { createComponent, useState, useEffect, useEffectOnce } from '../src';
-import { flush } from './util/flush';
 
 const template = {
     render(_context) {

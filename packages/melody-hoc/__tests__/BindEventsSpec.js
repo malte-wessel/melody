@@ -73,7 +73,7 @@ describe('BindEvents', function() {
                         clickedCount++;
                     },
                 },
-            }),
+            })
         );
 
         const MyComponent = createComponent(template);
@@ -88,12 +88,7 @@ describe('BindEvents', function() {
         };
 
         patchOuter(root, renderTemplate, { comp: true });
-        flush({
-            didTimeout: false,
-            timeRemaining() {
-                return 10;
-            },
-        });
+        flush();
         const croot = root.childNodes[0];
         dispatchClick(croot);
         patchOuter(root, renderTemplate, { comp: false });

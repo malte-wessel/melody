@@ -16,7 +16,7 @@
  */
 import options from './options';
 export { options };
-export { flush, Deadline, clear as clearQueue } from './renderQueue';
+export { flush, clear as clearQueue } from './renderQueue';
 export { getParent, link } from './hierarchy';
 export {
     patchInner as patch,

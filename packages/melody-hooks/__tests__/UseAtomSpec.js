@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 import { render } from 'melody-component';
-import { elementOpen, elementClose, text } from 'melody-idom';
+import { elementOpen, elementClose, text, flush } from 'melody-idom';
 import { createComponent, useAtom, useEffect } from '../src';
-import { flush } from './util/flush';
 
 const template = {
     render(_context) {

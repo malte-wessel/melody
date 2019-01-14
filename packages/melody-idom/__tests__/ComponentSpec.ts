@@ -133,92 +133,6 @@ describe('component', function() {
         expect(unmounted).toEqual(true);
     });
 
-    it('should render in multiple stages', function() {
-        // initial rendering happens immediately
-        patch(
-            el,
-            data => {
-                component(ParentComponent, 'test', {
-                    firstChild: { text: 'Hello' },
-                    secondChild: { text: 'World' },
-                });
-            },
-            {}
-        );
-        expect(el.innerHTML).toEqual('<m-placeholder></m-placeholder>');
-        run(1);
-        expect(el.innerHTML).toEqual(
-            '<section><div>Hello</div><div>World</div></section>'
-        );
-
-        patch(
-            el,
-            data => {
-                component(ParentComponent, 'test', {
-                    firstChild: { text: 'hello' },
-                    secondChild: { text: 'universe' },
-                });
-            },
-            {}
-        );
-        run(1);
-        // Updates outer element
-        expect(el.innerHTML).toEqual(
-            '<section><div>Hello</div><div>World</div></section>'
-        );
-        run(1);
-        // updates first child component
-        expect(el.innerHTML).toEqual(
-            '<section><div>hello</div><div>World</div></section>'
-        );
-        run(1);
-        // updates second child component
-        expect(el.innerHTML).toEqual(
-            '<section><div>hello</div><div>universe</div></section>'
-        );
-    });
-
-    it('should render synchronously', function() {
-        // activate synchronous rendering option
-        options.experimentalSyncDeepRendering = true;
-
-        // initial rendering happens immediately
-        patch(
-            el,
-            data => {
-                component(ParentComponent, 'test', {
-                    firstChild: { text: 'Hello' },
-                    secondChild: { text: 'World' },
-                });
-            },
-            {}
-        );
-        expect(el.innerHTML).toEqual('<m-placeholder></m-placeholder>');
-        run(1);
-        expect(el.innerHTML).toEqual(
-            '<section><div>Hello</div><div>World</div></section>'
-        );
-
-        patch(
-            el,
-            data => {
-                component(ParentComponent, 'test', {
-                    firstChild: { text: 'hello' },
-                    secondChild: { text: 'universe' },
-                });
-            },
-            {}
-        );
-        run(1);
-        // updates outer element, first and second child component synchronously
-        expect(el.innerHTML).toEqual(
-            '<section><div>hello</div><div>universe</div></section>'
-        );
-
-        // deactivate synchronous rendering option
-        options.experimentalSyncDeepRendering = false;
-    });
-
     it('should render new hierachies immediately', function() {
         patch(
             el,
@@ -233,37 +147,6 @@ describe('component', function() {
         run(1);
         expect(el.innerHTML).toEqual(
             '<section><div>Hello</div><div>World</div></section>'
-        );
-    });
-
-    it('should mount existing DOM in multiple stages', function() {
-        el.innerHTML =
-            '<section key="test"><div key="child1">Hello</div><div key="child2">World</div></section>';
-
-        patch(
-            el,
-            data => {
-                component(ParentComponent, 'test', {
-                    firstChild: { text: 'hello' },
-                    secondChild: { text: 'universe' },
-                });
-            },
-            {}
-        );
-        run(1);
-        // Updates outer element
-        expect(el.innerHTML).toEqual(
-            '<section><div key="child1">Hello</div><div key="child2">World</div></section>'
-        );
-        run(1);
-        // updates first child component
-        expect(el.innerHTML).toEqual(
-            '<section><div>hello</div><div key="child2">World</div></section>'
-        );
-        run(1);
-        // updates second child component
-        expect(el.innerHTML).toEqual(
-            '<section><div>hello</div><div>universe</div></section>'
         );
     });
 
@@ -298,11 +181,6 @@ describe('component', function() {
 
 function run(rounds = 1) {
     for (var i = 0; i < rounds; i++) {
-        flush({
-            didTimeout: false,
-            timeRemaining() {
-                return 0;
-            },
-        });
+        flush();
     }
 }

@@ -22,9 +22,9 @@ import {
     text,
     component,
     patchOuter,
+    flush,
 } from 'melody-idom';
 import { createComponent, useEffect, useEffectOnce, useState } from '../src';
-import { flush } from './util/flush';
 
 const template = {
     render(_context) {
@@ -611,7 +611,7 @@ describe('component', () => {
 
         const root = document.createElement('div');
         const MyComponent = createComponent(props => {
-            if (!props) throw new Error('Foo');
+            if (!props.value) throw new Error('Foo');
             const [foo] = useState(1337);
             const [bar] = useState(1337);
             return {

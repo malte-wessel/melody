@@ -15,11 +15,13 @@
  */
 const parentToChildren = new WeakMap();
 const childToParent = new WeakMap();
+const depth = new WeakMap();
 
 export function link(parent, child) {
     childToParent.set(child, parent);
     const children = getChildren(parent);
     children.push(child);
+    depth.set(child, getDepth(parent) + 1);
 }
 
 export function unlink(node) {
@@ -42,4 +44,8 @@ export function getParent(child) {
 
 export function reset(node) {
     parentToChildren.set(node, []);
+}
+
+export function getDepth(component) {
+    return depth.get(component) || 0;
 }

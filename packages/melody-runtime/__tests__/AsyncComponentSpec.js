@@ -506,11 +506,6 @@ function createPromise() {
 
 function run(rounds = 1) {
     for (var i = 0; i < rounds; i++) {
-        flush({
-            didTimeout: false,
-            timeRemaining() {
-                return 0;
-            },
-        });
+        flush();
     }
 }

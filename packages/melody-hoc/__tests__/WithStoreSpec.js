@@ -38,12 +38,7 @@ const template = {
 };
 
 const flush = () => {
-    _flush({
-        didTimeout: true,
-        timeRemaining() {
-            return 0;
-        },
-    });
+    _flush();
 };
 
 describe('WithStore', () => {

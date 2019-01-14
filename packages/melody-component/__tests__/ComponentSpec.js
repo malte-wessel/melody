@@ -97,7 +97,7 @@ describe('Component', function() {
         });
 
         const MyComponent = createComponent(template)(countMounting(0))(
-            countMounting(1),
+            countMounting(1)
         )(countMounting(2));
 
         render(root, MyComponent, { text: 'hello' });
@@ -143,22 +143,12 @@ describe('Component', function() {
         };
 
         patchOuter(root, renderTemplate, { comp: true });
-        flush({
-            didTimeout: false,
-            timeRemaining() {
-                return 10;
-            },
-        });
+        flush();
         assert.equal(root.innerHTML, '<div><p>hello</p><span>foo</span></div>');
         assert.equal(unmounted, 0);
 
         patchOuter(root, renderTemplate, { comp: false });
-        flush({
-            didTimeout: false,
-            timeRemaining() {
-                return 10;
-            },
-        });
+        flush();
         assert.equal(root.innerHTML, '');
         assert.equal(unmounted, 1);
     });
@@ -190,22 +180,12 @@ describe('Component', function() {
         };
 
         patchOuter(root, renderTemplate, { comp: true });
-        flush({
-            didTimeout: false,
-            timeRemaining() {
-                return 10;
-            },
-        });
+        flush();
         assert.equal(root.innerHTML, '<div><div>hello</div></div>');
         assert.equal(unmounted, 0);
 
         patchOuter(root, renderTemplate, { comp: false });
-        flush({
-            didTimeout: false,
-            timeRemaining() {
-                return 10;
-            },
-        });
+        flush();
         assert.equal(root.innerHTML, '');
         assert.equal(unmounted, 1);
     });
@@ -245,22 +225,12 @@ describe('Component', function() {
         };
 
         patchOuter(root, renderTemplate, { comp: true });
-        flush({
-            didTimeout: false,
-            timeRemaining() {
-                return 10;
-            },
-        });
+        flush();
         assert.equal(root.innerHTML, '<div>hello<div>world</div></div>');
         assert.equal(unmounted, 2);
 
         patchOuter(root, renderTemplate, { comp: false });
-        flush({
-            didTimeout: false,
-            timeRemaining() {
-                return 10;
-            },
-        });
+        flush();
         assert.equal(root.innerHTML, '');
         assert.equal(unmounted, 0);
     });
@@ -309,24 +279,14 @@ describe('Component', function() {
         };
 
         patchOuter(root, renderTemplate, { comp: true });
-        flush({
-            didTimeout: false,
-            timeRemaining() {
-                return 10;
-            },
-        });
+        flush();
         assert.equal(root.innerHTML, '<div><div><div></div></div></div>');
         assert.equal(unmounted.inner, 1);
         assert.equal(unmounted.middle, 1);
         assert.equal(unmounted.outer, 1);
 
         patchOuter(root, renderTemplate, { comp: false });
-        flush({
-            didTimeout: false,
-            timeRemaining() {
-                return 10;
-            },
-        });
+        flush();
         assert.equal(root.innerHTML, '');
         assert.equal(unmounted.inner, 0);
         assert.equal(unmounted.middle, 0);
@@ -670,7 +630,7 @@ describe('Component', function() {
         assert.notEqual(oldChild, root.children[0]);
         assert(
             oldChild.parentNode == null,
-            'Previous child no longer has a parent',
+            'Previous child no longer has a parent'
         );
     });
 
@@ -716,7 +676,7 @@ describe('Component', function() {
         const secondCompEl = root.childNodes[1];
         assert.equal(
             root.outerHTML,
-            '<div><div>hello</div><div>world</div></div>',
+            '<div><div>hello</div><div>world</div></div>'
         );
         assert.equal(mounted, 2);
 
@@ -726,7 +686,7 @@ describe('Component', function() {
         });
         assert.equal(
             root.outerHTML,
-            '<div><div>world</div><div>hello</div></div>',
+            '<div><div>world</div><div>hello</div></div>'
         );
         assert.equal(firstCompEl, root.childNodes[1]);
         assert.equal(secondCompEl, root.childNodes[0]);
@@ -768,7 +728,7 @@ describe('Component', function() {
         assert.notEqual(oldChild, root.children[0]);
         assert(
             oldChild.parentNode == null,
-            'Previous child no longer has a parent',
+            'Previous child no longer has a parent'
         );
     });
 
@@ -792,18 +752,13 @@ describe('Component', function() {
                     return { ...state, ...action.payload };
                 }
                 return state;
-            },
+            }
         );
 
         render(root, MyComponent, { text: 'hello' });
         assert.equal(root.outerHTML, '<div>hello</div>');
         comp.dispatch({ type: 'setText', payload: 'world' });
-        flush({
-            didTimeout: false,
-            timeRemaining() {
-                return 10;
-            },
-        });
+        flush();
         assert.equal(root.outerHTML, '<div>world</div>');
         done();
     });

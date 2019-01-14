@@ -46,7 +46,7 @@ describe('LifeCycle', function() {
                 componentDidInitialize() {
                     log.push(1);
                 },
-            }),
+            })
         );
 
         const MyComponent = createComponent(template, undefined, {
@@ -211,10 +211,5 @@ describe('LifeCycle', function() {
 });
 
 function finishRendering() {
-    flush({
-        didTimeout: false,
-        timeRemaining() {
-            return 10;
-        },
-    });
+    flush();
 }

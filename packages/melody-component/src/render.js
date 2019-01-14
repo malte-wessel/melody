@@ -20,12 +20,7 @@ export function render(el, Component, props) {
         mount(el, Component, props);
     });
     if (process.env.NODE_ENV === 'test') {
-        flush({
-            didTimeout: false,
-            timeRemaining() {
-                return 10;
-            },
-        });
+        flush();
     }
     return result;
 }

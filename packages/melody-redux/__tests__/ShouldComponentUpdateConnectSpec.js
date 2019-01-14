@@ -138,12 +138,7 @@ it('should not delete child component if child did not need rendering', done => 
     // ChildComponent does not need rendering (shouldComponentUpdate)
     // ConnectedChild deletes ChildComponent (delete unvisited nodes)
     store.dispatch({ type: 'REFRESH' });
-    flush({
-        didTimeout: false,
-        timeRemaining() {
-            return 10;
-        },
-    });
+    flush();
     assert.equal(root.outerHTML, '<li><span>1</span></li>');
     done();
 });

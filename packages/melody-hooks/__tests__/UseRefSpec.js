@@ -16,10 +16,15 @@
 import { assert } from 'chai';
 
 import { render } from 'melody-component';
-import { component, elementOpen, elementClose, elementVoid } from 'melody-idom';
+import {
+    component,
+    elementOpen,
+    elementClose,
+    elementVoid,
+    flush,
+} from 'melody-idom';
 import { createComponent, useState, useEffect, useRef } from '../src';
 import { getRefCounter } from '../src/hooks/useRef';
-import { flush } from './util/flush';
 
 const createParentComponent = Child => {
     return createComponent(props => props, {
