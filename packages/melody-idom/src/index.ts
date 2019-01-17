@@ -16,7 +16,12 @@
  */
 import options from './options';
 export { options };
-export { flush, clear as clearQueue } from './renderQueue';
+export {
+    flush,
+    clear as clearQueue,
+    setQueueRecordsComponentMapper,
+    getQueueRecords,
+} from './renderQueue';
 export { getParent, link } from './hierarchy';
 export {
     patchInner as patch,

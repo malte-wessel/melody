@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import {
-    patch,
     patchOuter,
     elementOpen,
     text,
@@ -23,11 +22,13 @@ import {
     enqueueComponent,
     flush,
     mount,
-    link,
-    getParent,
-    options,
 } from '../src';
-import { getChildren } from '../src/hierarchy';
+
+import {
+    setQueueRecordsComponentMapper,
+    getQueueRecords,
+} from '../src/renderQueue';
+
 import { createStore } from 'redux';
 
 class Component {
@@ -51,9 +52,9 @@ class Component {
 
 class SimpleTextComponent extends Component {
     render() {
-        elementOpen('div');
+        elementOpen('span');
         text(this.props.text);
-        elementClose('div');
+        elementClose('span');
     }
 }
 
@@ -68,14 +69,21 @@ const render = (el, Component, props) => {
     flush();
 };
 
+beforeAll(() => {
+    setQueueRecordsComponentMapper(comp => comp.constructor.name);
+});
+afterAll(() => {
+    setQueueRecordsComponentMapper(null);
+});
+
 describe('renderQueue', () => {
     describe('basic functionality', () => {
         it('should render the component', () => {
-            const root = document.createElement('div');
+            const root = document.createElement('span');
             render(root, SimpleTextComponent, { text: 'Hello World!' });
-            expect(root.outerHTML).toEqual('<div>Hello World!</div>');
+            expect(root.outerHTML).toEqual('<span>Hello World!</span>');
             render(root, SimpleTextComponent, { text: 'Hello Programm!' });
-            expect(root.outerHTML).toEqual('<div>Hello Programm!</div>');
+            expect(root.outerHTML).toEqual('<span>Hello Programm!</span>');
         });
         it('should render child components', () => {
             class ParentComponent extends Component {
@@ -91,17 +99,27 @@ describe('renderQueue', () => {
                 childs: [{ text: 'foo' }, { text: 'bar' }],
             });
             expect(root.outerHTML).toEqual(
-                '<div><div>foo</div><div>bar</div></div>'
+                '<div><span>foo</span><span>bar</span></div>'
             );
+            expect(getQueueRecords()).toEqual([
+                'ParentComponent',
+                'SimpleTextComponent',
+                'SimpleTextComponent',
+            ]);
             render(root, ParentComponent, {
                 childs: [{ text: 'bar' }, { text: 'foo' }],
             });
             expect(root.outerHTML).toEqual(
-                '<div><div>bar</div><div>foo</div></div>'
+                '<div><span>bar</span><span>foo</span></div>'
             );
+            expect(getQueueRecords()).toEqual([
+                'ParentComponent',
+                'SimpleTextComponent',
+                'SimpleTextComponent',
+            ]);
         });
     });
-    describe('foo', () => {
+    describe('multiple components in queue', () => {
         const initialState = {
             value: 'foo',
         };
@@ -135,25 +153,15 @@ describe('renderQueue', () => {
             }
         }
 
-        it('should work', () => {
-            const store = createStore(reducer);
-            const root = document.createElement('div');
-            render(root, SubscribedComponent, { store });
-            expect(root.outerHTML).toEqual('<div>foo</div>');
-            store.dispatch({ type: 'SET', payload: 'bar' });
-            flush();
-            expect(root.outerHTML).toEqual('<div>bar</div>');
-        });
-
-        it.only('should work 2', () => {
+        it('should work 2', () => {
             const rendersA = 0;
             const rendersB = 0;
             class B extends SubscribedComponent {
                 render() {
                     rendersB++;
-                    elementOpen('div');
+                    elementOpen('span');
                     text(this.state.value + ':' + this.props.value);
-                    elementClose('div');
+                    elementClose('span');
                 }
             }
             class A extends SubscribedComponent {
@@ -162,14 +170,9 @@ describe('renderQueue', () => {
                     const { state, props } = this;
                     const { store } = props;
                     elementOpen('div');
-                    elementOpen('div');
-                    text(state.value);
-                    elementClose('div');
-                    elementOpen('div');
                     component(SimpleTextComponent, 'b', { text: state.value });
                     component(SimpleTextComponent, 'c', { text: state.value });
                     component(B, 'd', { value: state.value, store });
-                    elementClose('div');
                     elementClose('div');
                 }
             }
@@ -178,16 +181,28 @@ describe('renderQueue', () => {
             const root = document.createElement('div');
             render(root, A, { store });
             expect(root.outerHTML).toEqual(
-                '<div><div>foo</div><div><div>foo</div><div>foo</div><div>foo:foo</div></div></div>'
+                '<div><span>foo</span><span>foo</span><span>foo:foo</span></div>'
             );
-            console.log('UPDATE');
+            expect(getQueueRecords()).toEqual([
+                'A',
+                'SimpleTextComponent',
+                'SimpleTextComponent',
+                'B',
+            ]);
+
             store.dispatch({ type: 'SET', payload: 'bar' });
             flush();
             expect(root.outerHTML).toEqual(
-                '<div><div>bar</div><div><div>bar</div><div>bar</div><div>bar:bar</div></div></div>'
+                '<div><span>bar</span><span>bar</span><span>bar:bar</span></div>'
             );
             expect(rendersA).toEqual(2);
             expect(rendersB).toEqual(2);
+            expect(getQueueRecords()).toEqual([
+                'A',
+                'SimpleTextComponent',
+                'SimpleTextComponent',
+                'B',
+            ]);
         });
     });
 });

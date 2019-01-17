@@ -21,9 +21,13 @@ export const mountedComponents = new WeakSet<RenderableComponent>();
 
 const queue: RenderableComponent[] = [];
 
+let needsSort = false;
 function addToQueue(component: RenderableComponent) {
-    if (queue.includes(component)) return;
+    if (queue.includes(component)) {
+        drop(component);
+    }
     queue.push(component);
+    needsSort = true;
 }
 
 export function clear() {
@@ -42,21 +46,49 @@ function tick(callback: () => void) {
     if (isTicking) return;
     isTicking = true;
     requestAnimationFrame(() => {
-        callback();
         isTicking = false;
+        callback();
     });
 }
 
-export function flush() {
+function sortQueueIfNeeded() {
+    if (!needsSort) return;
     queue.sort((a, b) => getDepth(a) - getDepth(b));
+    needsSort = false;
+}
+
+let queueRecordsComponentMapper = component => component.constructor.name;
+let queueRecords = [];
+
+export function setQueueRecordsComponentMapper(componentMapper) {
+    queueRecordsComponentMapper = componentMapper;
+}
+
+export function getQueueRecords() {
+    return queueRecords;
+}
+
+export function flush() {
+    if (process.env.NODE_ENV !== 'production') {
+        queueRecords = [];
+    }
 
     let next: RenderableComponent;
     const notify: RenderableComponent[] = [];
+    // @TODO: sort by root?
+    sortQueueIfNeeded();
+
     while ((next = queue.shift())) {
+        if (process.env.NODE_ENV !== 'production') {
+            queueRecords.push(queueRecordsComponentMapper(next));
+        }
+
         if (next.el) {
             patchOuter(next.el, _ => updateComponent(next), {});
             notify.push(next);
         }
+
+        sortQueueIfNeeded();
     }
     for (let i = 0, l = notify.length; i < l; i++) {
         const component = notify[i];
